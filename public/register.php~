@@ -1,0 +1,48 @@
+<?php
+
+// configuration
+require("../includes/config.php");
+
+
+
+// if user reached page via GET (as by clicking a link or via redirect)
+if ($_SERVER["REQUEST_METHOD"] == "GET")
+{
+     // else render form
+     render("register_form.php", ["title" => "Register"]);
+}
+// else if user reached page via POST (as by submitting a form via POST)
+else if ($_SERVER["REQUEST_METHOD"] == "POST")
+{
+    // TODO
+
+   
+   
+   if (isset($_POST['username'], $_POST['password'], $_POST['confirmation']) && $_POST['password'] == $_POST['confirmation'])
+   {    
+       // store values in variables
+       $userName = htmlentities($_POST['username']); 
+       $password = htmlentities($_POST['password']); 
+       $confirm  = htmlentities($_POST['confirmation']);
+       
+       // insert into database
+       query("INSERT INTO users (username, hash, cash) VALUES(?, ?, 5000.00)", "{$userName}", crypt("{$password}"));
+       $rows = query("SELECT LAST_INSERT_ID() AS id"); 
+       
+       // remember that user's now logged in by storing user's ID in session
+       $_SESSION["id"] = $rows[0]["id"];
+
+     
+
+       // redirect to portfolio
+       redirect("index.php"); 
+   }
+   else
+   {
+       // do something
+        apologize("You must fill out all fields with correct information!");
+   }
+
+}
+
+?>
